@@ -1,6 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("io.realm.kotlin")
+    //id("com.google.gms.google-services")
 }
 
 android {
@@ -66,4 +70,49 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Dagger Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
+
+    // Realm
+    implementation("io.realm.kotlin:library-base:1.11.0")
+    implementation("io.realm.kotlin:library-sync:1.11.0")
+
+    // Compose Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    // Runtime Compose
+    implementation("androidx.compose.runtime:runtime:1.6.2")
+
+    // Splash API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Google Play Services Auth
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Date Time Picker
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+
+    // Message Bar Compose
+    implementation("com.github.stevdza-san:MessageBarCompose:1.0.5")
+
+    // Ont-Tap Compose
+    implementation("com.github.stevdza-san:OneTapCompose:1.0.0")
+
+    // Desugar JDK
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
 }

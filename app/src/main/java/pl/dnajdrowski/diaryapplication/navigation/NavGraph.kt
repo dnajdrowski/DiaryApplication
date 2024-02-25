@@ -1,6 +1,9 @@
 package pl.dnajdrowski.diaryapplication.navigation
 
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
+import kotlinx.coroutines.launch
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationScreen
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationViewModel
 import pl.dnajdrowski.diaryapplication.presentation.screens.home.HomeScreen
@@ -87,8 +91,16 @@ fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
         HomeScreen(
-            onMenuClicked = { },
+            drawerState = drawerState,
+            onSignOutClicked = { },
+            onMenuClicked = {
+                scope.launch {
+                    drawerState.open()
+                }
+            },
             navigateToWrite = navigateToWrite
         )
     }

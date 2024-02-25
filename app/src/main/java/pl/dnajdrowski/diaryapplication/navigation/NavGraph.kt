@@ -12,6 +12,7 @@ import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationScreen
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationViewModel
+import pl.dnajdrowski.diaryapplication.presentation.screens.home.HomeScreen
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import java.lang.Exception
 
@@ -30,7 +31,11 @@ fun SetupNavGraph(
                 navController.navigate(Screen.Home.route)
             }
         )
-        homeRoute()
+        homeRoute(
+            navigateToWrite = {
+                navController.navigate(Screen.Write.route)
+            }
+        )
         writeRoute()
     }
 }
@@ -78,9 +83,14 @@ fun NavGraphBuilder.authenticationRoute(
     }
 }
 
-fun NavGraphBuilder.homeRoute() {
+fun NavGraphBuilder.homeRoute(
+    navigateToWrite: () -> Unit
+) {
     composable(route = Screen.Home.route) {
-
+        HomeScreen(
+            onMenuClicked = { },
+            navigateToWrite = navigateToWrite
+        )
     }
 }
 

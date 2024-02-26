@@ -7,22 +7,31 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import io.realm.kotlin.mongodb.App
+import pl.dnajdrowski.diaryapplication.data.repository.MongoDB
 import pl.dnajdrowski.diaryapplication.navigation.Screen
 import pl.dnajdrowski.diaryapplication.navigation.SetupNavGraph
 import pl.dnajdrowski.diaryapplication.ui.theme.DiaryApplicationTheme
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
 
 class MainActivity : ComponentActivity() {
+
+    private var keepSplashOpened = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition {
+            keepSplashOpened
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             DiaryApplicationTheme {
                 val navController = rememberNavController()
                 SetupNavGraph(
                     startDestination = getStartDestination(),
-                    navController = navController
+                    navController = navController,
+                    onDataLoaded = {
+                        keepSplashOpened = false
+                    }
                 )
             }
         }

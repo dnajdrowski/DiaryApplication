@@ -31,6 +31,7 @@ import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationV
 import pl.dnajdrowski.diaryapplication.presentation.screens.home.HomeScreen
 import pl.dnajdrowski.diaryapplication.presentation.screens.home.HomeViewModel
 import pl.dnajdrowski.diaryapplication.presentation.screens.write.WriteScreen
+import pl.dnajdrowski.diaryapplication.presentation.screens.write.WriteViewModel
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import pl.dnajdrowski.diaryapplication.util.RequestState
@@ -57,11 +58,14 @@ fun SetupNavGraph(
             navigateToWrite = {
                 navController.navigate(Screen.Write.route)
             },
+            navigateToWriteWithArgs = {
+                navController.navigate(Screen.Write.passDiaryId(it))
+            },
             navigateToAuth = {
                 navController.popBackStack()
                 navController.navigate(Screen.Authentication.route)
             },
-            onDataLoaded = onDataLoaded
+            onDataLoaded = onDataLoaded,
         )
         writeRoute(
             onBackPressed = {
@@ -121,6 +125,7 @@ fun NavGraphBuilder.authenticationRoute(
 
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit,
     navigateToAuth: () -> Unit,
     onDataLoaded: () -> Unit
 ) {
@@ -148,7 +153,8 @@ fun NavGraphBuilder.homeRoute(
                     drawerState.open()
                 }
             },
-            navigateToWrite = navigateToWrite
+            navigateToWrite = navigateToWrite,
+            navigateToWriteWithArgs = navigateToWriteWithArgs
         )
 
         DisplayAlertDialog(
@@ -193,6 +199,13 @@ fun NavGraphBuilder.writeRoute(
             initialPage = 0,
             initialPageOffsetFraction = 0f,
         ) { Mood.entries.size }
+
+        val viewModel: WriteViewModel = viewModel()
+        val uiState = viewModel.uiState
+
+        LaunchedEffect(key1 = uiState) {
+
+        }
 
         WriteScreen(
             pagerState = pagerState,

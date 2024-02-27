@@ -138,8 +138,6 @@ fun WriteContent(
                         alpha = 0.38f
                     )
                 ),
-                maxLines = 1,
-                singleLine = true
             )
         }
         

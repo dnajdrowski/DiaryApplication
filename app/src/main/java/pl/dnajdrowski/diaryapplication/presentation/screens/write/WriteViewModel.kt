@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,6 +17,8 @@ import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import pl.dnajdrowski.diaryapplication.util.RequestState
+import pl.dnajdrowski.diaryapplication.util.toRealmInstant
+import java.time.ZonedDateTime
 
 class WriteViewModel(
     private val savedStateHandle: SavedStateHandle
@@ -55,13 +58,17 @@ class WriteViewModel(
         }
     }
 
-    fun insertDiary(
+    private fun insertDiary(
         diary: Diary,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = MongoDB.insertDiary(diary = diary)
+            val result = MongoDB.insertDiary(diary = diary.apply {
+                if (uiState.updatedDateTime != null) {
+                    date = uiState.updatedDateTime!!
+                }
+            })
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
@@ -71,6 +78,46 @@ class WriteViewModel(
                     onError(result.error.message.toString())
                 }
             }
+        }
+    }
+
+    private fun updateDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = MongoDB.updateDiary(
+                diary = diary.apply {
+                    _id = ObjectId.invoke(uiState.selectedDiaryId!!)
+                    date =  if (uiState.updatedDateTime != null) {
+                        uiState.updatedDateTime!!
+                    } else {
+                        uiState.selectedDiary!!.date
+                    }
+                }
+            )
+            if (result is RequestState.Success) {
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } else if (result is RequestState.Error) {
+                withContext(Dispatchers.Main) {
+                    onError(result.error.message.toString())
+                }
+            }
+        }
+    }
+
+    fun upsertDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        if (uiState.selectedDiaryId != null) {
+            updateDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+        } else {
+            insertDiary(diary = diary, onSuccess = onSuccess, onError = onError)
         }
     }
 
@@ -97,6 +144,12 @@ class WriteViewModel(
             mood = mood
         )
     }
+
+    fun updateDateTime(zonedDateTime: ZonedDateTime?) {
+        uiState = uiState.copy(
+            updatedDateTime = zonedDateTime?.toInstant()?.toRealmInstant()
+        )
+    }
 }
 
 data class UiState(
@@ -104,5 +157,6 @@ data class UiState(
     val selectedDiary: Diary? = null,
     val title: String = "",
     val description: String = "",
-    val mood: Mood = Mood.Neutral
+    val mood: Mood = Mood.Neutral,
+    val updatedDateTime: RealmInstant? = null
 )

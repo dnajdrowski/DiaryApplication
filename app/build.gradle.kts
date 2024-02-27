@@ -105,9 +105,14 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    // Date Time Picker
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    // Date-Time Picker
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
 
+    // Calendar
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2")
+
+    // Clock
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2")
     // Message Bar Compose
     implementation("com.github.stevdza-san:MessageBarCompose:1.0.5")
 

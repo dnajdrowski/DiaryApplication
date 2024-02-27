@@ -1,6 +1,7 @@
 package pl.dnajdrowski.diaryapplication.presentation.screens.write
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.Mood
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -45,9 +47,11 @@ fun WriteContent(
     title: String,
     onTitleChanged: (String) -> Unit,
     description: String,
-    onDescriptionChanged: (String) -> Unit
+    onDescriptionChanged: (String) -> Unit,
+    onSavedClicked: (Diary) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = uiState.mood) {
         pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
@@ -144,7 +148,22 @@ fun WriteContent(
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = Shapes().small,
-                onClick = { /*TODO*/ }
+                onClick = {
+                    if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
+                        onSavedClicked(
+                            Diary().apply {
+                                this.title = uiState.title
+                                this.description = uiState.description
+                            }
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Fields cannot be empty.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             ) {
                 Text(
                     text = "Save"

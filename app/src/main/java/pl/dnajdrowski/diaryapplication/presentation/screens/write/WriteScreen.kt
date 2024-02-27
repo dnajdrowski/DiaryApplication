@@ -17,7 +17,8 @@ fun WriteScreen(
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDeleteConfirmed: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onSavedClicked: (Diary) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -36,7 +37,8 @@ fun WriteScreen(
                 title = uiState.title,
                 onTitleChanged = onTitleChanged,
                 description = uiState.description,
-                onDescriptionChanged = onDescriptionChanged
+                onDescriptionChanged = onDescriptionChanged,
+                onSavedClicked
             )
         }
     )

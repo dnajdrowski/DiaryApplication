@@ -7,7 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import pl.dnajdrowski.diaryapplication.data.repository.MongoDB
 import pl.dnajdrowski.diaryapplication.model.Diary
@@ -53,7 +55,26 @@ class WriteViewModel(
         }
     }
 
-    fun setSelectedDiary(diary: Diary) {
+    fun insertDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = MongoDB.addNewDiary(diary = diary)
+            if (result is RequestState.Success) {
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } else if (result is RequestState.Error){
+                withContext(Dispatchers.Main) {
+                    onError(result.error.message.toString())
+                }
+            }
+        }
+    }
+
+    private fun setSelectedDiary(diary: Diary) {
         uiState = uiState.copy(
             selectedDiary = diary
         )
@@ -71,7 +92,7 @@ class WriteViewModel(
         )
     }
 
-    fun setMood(mood: Mood) {
+    private fun setMood(mood: Mood) {
         uiState = uiState.copy(
             mood = mood
         )

@@ -25,6 +25,7 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.presentation.components.DisplayAlertDialog
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationScreen
@@ -219,6 +220,13 @@ fun NavGraphBuilder.writeRoute(
             },
             onDescriptionChanged = { description ->
                 viewModel.setDescription(description)
+            },
+            onSavedClicked = {
+                viewModel.insertDiary(
+                    diary = it.apply { mood = Mood.entries[pageNumber].name },
+                    onSuccess = { onBackPressed() },
+                    onError = { }
+                )
             }
         )
     }

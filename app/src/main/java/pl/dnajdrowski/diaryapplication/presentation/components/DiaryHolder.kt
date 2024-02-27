@@ -1,5 +1,6 @@
 package pl.dnajdrowski.diaryapplication.presentation.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -68,7 +69,7 @@ fun DiaryHolder(
                 MutableInteractionSource()
             }
         ) {
-            onClick(diary._id.toString())
+            onClick(diary._id.toHexString())
         }
     ) {
         Spacer(modifier = Modifier.width(14.dp))

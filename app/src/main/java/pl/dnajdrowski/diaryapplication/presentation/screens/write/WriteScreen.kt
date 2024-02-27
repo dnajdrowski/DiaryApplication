@@ -11,29 +11,33 @@ import pl.dnajdrowski.diaryapplication.model.Diary
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WriteScreen(
+    uiState: UiState,
     pagerState: PagerState,
-    selectedDiary: Diary?,
+    moodName: () -> String,
+    onTitleChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
     onDeleteConfirmed: () -> Unit,
     onBackPressed: () -> Unit
 ) {
     Scaffold(
         topBar = {
             WriteTopBar(
-                selectedDiary = selectedDiary,
+                selectedDiary = uiState.selectedDiary,
                 onBackPressed = onBackPressed,
+                moodName = moodName,
                 onDeleteConfirmed = onDeleteConfirmed
             )
         },
         content = {
             WriteContent(
-                parerState = pagerState,
+                uiState = uiState,
+                pagerState = pagerState,
                 paddingValues = it,
-                title = "",
-                onTitleChanged = {},
-                description = "",
-                onDescriptionChanged = {}
+                title = uiState.title,
+                onTitleChanged = onTitleChanged,
+                description = uiState.description,
+                onDescriptionChanged = onDescriptionChanged
             )
-
         }
     )
 

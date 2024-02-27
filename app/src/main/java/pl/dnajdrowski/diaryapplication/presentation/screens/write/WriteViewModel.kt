@@ -61,7 +61,7 @@ class WriteViewModel(
         onError: (String) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = MongoDB.addNewDiary(diary = diary)
+            val result = MongoDB.insertDiary(diary = diary)
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()

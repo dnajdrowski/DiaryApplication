@@ -1,6 +1,7 @@
 package pl.dnajdrowski.diaryapplication.presentation.screens.write
 
 import android.util.Log
+import android.view.PixelCopy.Request
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
@@ -44,6 +46,9 @@ class WriteViewModel(
         if (uiState.selectedDiaryId != null) {
             viewModelScope.launch {
                 MongoDB.getSelectedDiary(diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
+                    .catch {
+                        emit(RequestState.Error(Exception("Diary is already delete.")))
+                    }
                     .collect { diary ->
                         if (diary is RequestState.Success) {
                             setSelectedDiary(diary = diary.data)
@@ -90,7 +95,7 @@ class WriteViewModel(
             val result = MongoDB.updateDiary(
                 diary = diary.apply {
                     _id = ObjectId.invoke(uiState.selectedDiaryId!!)
-                    date =  if (uiState.updatedDateTime != null) {
+                    date = if (uiState.updatedDateTime != null) {
                         uiState.updatedDateTime!!
                     } else {
                         uiState.selectedDiary!!.date
@@ -118,6 +123,25 @@ class WriteViewModel(
             updateDiary(diary = diary, onSuccess = onSuccess, onError = onError)
         } else {
             insertDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+        }
+    }
+
+    fun deleteDiary(
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (uiState.selectedDiaryId != null) {
+                val result =
+                    MongoDB.deleteDiary(diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
+                if (result is RequestState.Success) {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                } else if (result is RequestState.Error) {
+                    onError(result.error.message.toString())
+                }
+            }
         }
     }
 

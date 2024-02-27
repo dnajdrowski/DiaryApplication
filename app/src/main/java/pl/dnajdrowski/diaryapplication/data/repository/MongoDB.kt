@@ -15,6 +15,7 @@ import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
 import pl.dnajdrowski.diaryapplication.util.RequestState
 import pl.dnajdrowski.diaryapplication.util.toInstant
+import java.lang.Error
 import java.time.ZoneId
 
 object MongoDB : MongoRepository {
@@ -116,6 +117,28 @@ object MongoDB : MongoRepository {
                     RequestState.Success(data = queriedDiary)
                 } else {
                     RequestState.Error(error = Exception("Queried Diary does not exist."))
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+        }
+    }
+
+    override suspend fun deleteDiary(diaryId: ObjectId): RequestState<Diary> {
+        return if (user != null) {
+            realm.write {
+                val diary = query<Diary>(query = "_id == $0 AND ownerId == $1", diaryId, user.id)
+                    .first()
+                    .find()
+                if (diary != null) {
+                    try {
+                        delete(diary)
+                        RequestState.Success(data = diary)
+                    } catch (e: Error) {
+                        RequestState.Error(e)
+                    }
+                } else {
+                    RequestState.Error(Exception("Diary does not exist."))
                 }
             }
         } else {

@@ -1,5 +1,6 @@
 package pl.dnajdrowski.diaryapplication.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -202,6 +204,8 @@ fun NavGraphBuilder.writeRoute(
             initialPageOffsetFraction = 0f,
         ) { Mood.entries.size }
 
+        val context = LocalContext.current
+
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
         val pageNumber by remember {
@@ -214,7 +218,25 @@ fun NavGraphBuilder.writeRoute(
                 Mood.entries[pageNumber].name
             },
             onBackPressed = onBackPressed,
-            onDeleteConfirmed = {},
+            onDeleteConfirmed = {
+                viewModel.deleteDiary(
+                    onSuccess = {
+                        Toast.makeText(
+                            context,
+                            "Deleted",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        onBackPressed()
+                    },
+                    onError = { message ->
+                        Toast.makeText(
+                            context,
+                            message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            },
             onDateTimeUpdated = { zonedDateTime ->
                 viewModel.updateDateTime(zonedDateTime)
             },
@@ -228,7 +250,13 @@ fun NavGraphBuilder.writeRoute(
                 viewModel.upsertDiary(
                     diary = it.apply { mood = Mood.entries[pageNumber].name },
                     onSuccess = { onBackPressed() },
-                    onError = { }
+                    onError = { message ->
+                        Toast.makeText(
+                            context,
+                            message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
             }
         )

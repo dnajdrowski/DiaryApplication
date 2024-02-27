@@ -1,4 +1,4 @@
-package pl.dnajdrowski.diaryapplication.util
+package pl.dnajdrowski.diaryapplication.model
 
 sealed class RequestState<out T> {
     data object Idle: RequestState<Nothing>()

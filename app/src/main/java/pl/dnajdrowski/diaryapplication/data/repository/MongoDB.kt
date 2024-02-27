@@ -1,6 +1,5 @@
 package pl.dnajdrowski.diaryapplication.data.repository
 
-import android.util.Log
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.log.LogLevel
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import org.mongodb.kbson.ObjectId
 import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
-import pl.dnajdrowski.diaryapplication.util.RequestState
+import pl.dnajdrowski.diaryapplication.model.RequestState
 import pl.dnajdrowski.diaryapplication.util.toInstant
 import java.lang.Error
 import java.time.ZoneId

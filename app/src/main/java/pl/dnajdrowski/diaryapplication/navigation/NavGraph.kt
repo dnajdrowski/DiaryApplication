@@ -27,7 +27,6 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.presentation.components.DisplayAlertDialog
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationScreen
@@ -38,7 +37,7 @@ import pl.dnajdrowski.diaryapplication.presentation.screens.write.WriteScreen
 import pl.dnajdrowski.diaryapplication.presentation.screens.write.WriteViewModel
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import pl.dnajdrowski.diaryapplication.util.RequestState
+import pl.dnajdrowski.diaryapplication.model.RequestState
 import java.lang.Exception
 
 @Composable

@@ -1,7 +1,6 @@
 package pl.dnajdrowski.diaryapplication.presentation.screens.write
 
 import android.util.Log
-import android.view.PixelCopy.Request
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,7 +17,7 @@ import pl.dnajdrowski.diaryapplication.data.repository.MongoDB
 import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import pl.dnajdrowski.diaryapplication.util.RequestState
+import pl.dnajdrowski.diaryapplication.model.RequestState
 import pl.dnajdrowski.diaryapplication.util.toRealmInstant
 import java.time.ZonedDateTime
 

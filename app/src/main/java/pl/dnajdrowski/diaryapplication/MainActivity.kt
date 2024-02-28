@@ -13,11 +13,13 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import pl.dnajdrowski.diaryapplication.data.database.ImageToDeleteDao
 import pl.dnajdrowski.diaryapplication.data.database.ImageToUploadDao
 import pl.dnajdrowski.diaryapplication.navigation.Screen
 import pl.dnajdrowski.diaryapplication.navigation.SetupNavGraph
 import pl.dnajdrowski.diaryapplication.ui.theme.DiaryApplicationTheme
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
+import pl.dnajdrowski.diaryapplication.util.retryDeleteImageFromFirebase
 import pl.dnajdrowski.diaryapplication.util.retryUploadingImageToFirebase
 import javax.inject.Inject
 
@@ -26,6 +28,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var imageToUploadDao: ImageToUploadDao
+
+    @Inject
+    lateinit var imageToDeleteDao: ImageToDeleteDao
 
     private var keepSplashOpened = true
 
@@ -49,13 +54,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        cleanupCheck(scope = lifecycleScope, imageToUploadDao = imageToUploadDao)
+        cleanupCheck(scope = lifecycleScope, imageToUploadDao = imageToUploadDao, imageToDeleteDao)
     }
 }
 
 private fun cleanupCheck(
     scope: CoroutineScope,
-    imageToUploadDao: ImageToUploadDao
+    imageToUploadDao: ImageToUploadDao,
+    imageToDeleteDao: ImageToDeleteDao
 ) {
    scope.launch(Dispatchers.IO) {
        val result = imageToUploadDao.getAllImages()
@@ -65,6 +71,18 @@ private fun cleanupCheck(
                 onSuccess = {
                     scope.launch(Dispatchers.IO) {
                         imageToUploadDao.cleanupImage(imageToUpload.id)
+                    }
+                }
+            )
+       }
+
+       val resulImagesToDelete = imageToDeleteDao.getAllImages()
+       resulImagesToDelete.forEach {  imageToDelete ->
+            retryDeleteImageFromFirebase(
+                imageToDelete = imageToDelete,
+                onSuccess = {
+                    scope.launch(Dispatchers.IO) {
+                        imageToDeleteDao.cleanupImage(imageToDelete.id)
                     }
                 }
             )

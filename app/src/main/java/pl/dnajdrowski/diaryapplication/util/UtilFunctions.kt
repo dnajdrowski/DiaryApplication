@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
 import io.realm.kotlin.types.RealmInstant
+import pl.dnajdrowski.diaryapplication.data.database.entity.ImageToDelete
 import pl.dnajdrowski.diaryapplication.data.database.entity.ImageToUpload
 import java.time.Instant
 
@@ -41,8 +42,17 @@ fun retryUploadingImageToFirebase(
         storageMetadata {  },
         imageToUpload.sessionUri.toUri()
     ).addOnSuccessListener { onSuccess() }
-
 }
+
+fun retryDeleteImageFromFirebase(
+    imageToDelete: ImageToDelete,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToDelete.remoteImagePath).delete()
+        .addOnSuccessListener { onSuccess() }
+}
+
 
 fun RealmInstant.toInstant(): Instant {
     val sec: Long = this.epochSeconds

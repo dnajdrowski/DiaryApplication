@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import io.realm.kotlin.mongodb.App
-import pl.dnajdrowski.diaryapplication.data.repository.MongoDB
 import pl.dnajdrowski.diaryapplication.navigation.Screen
 import pl.dnajdrowski.diaryapplication.navigation.SetupNavGraph
 import pl.dnajdrowski.diaryapplication.ui.theme.DiaryApplicationTheme
@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
             keepSplashOpened
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        FirebaseApp.initializeApp(this)
         setContent {
             DiaryApplicationTheme {
                 val navController = rememberNavController()

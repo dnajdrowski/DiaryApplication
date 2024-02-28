@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 import pl.dnajdrowski.diaryapplication.model.Diary
 import pl.dnajdrowski.diaryapplication.model.GalleryState
@@ -190,6 +191,9 @@ fun WriteContent(
                             Diary().apply {
                                 this.title = uiState.title
                                 this.description = uiState.description
+                                this.images = galleryState.images.map {
+                                    it.remoteImagePath
+                                }.toRealmList()
                             }
                         )
                     } else {

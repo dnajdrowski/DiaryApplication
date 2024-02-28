@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -23,6 +24,7 @@ import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import pl.dnajdrowski.diaryapplication.model.RequestState
 import pl.dnajdrowski.diaryapplication.model.rememberGalleryState
+import pl.dnajdrowski.diaryapplication.util.fetchImagesFromFirebase
 import pl.dnajdrowski.diaryapplication.util.toRealmInstant
 import java.time.ZonedDateTime
 
@@ -61,12 +63,32 @@ class WriteViewModel(
                             setTitle(title = diary.data.title)
                             setDescription(description = diary.data.description)
                             setMood(mood = Mood.valueOf(diary.data.mood))
+                            fetchImagesFromFirebase(
+                                remoteImagePaths = diary.data.images,
+                                onImageDownload = { downloadedImage ->
+                                    galleryState.addImage(
+                                        GalleryImage(
+                                            image = downloadedImage,
+                                            remoteImagePath = extractRemoteImagePath(
+                                                fullImageUrl = downloadedImage.toString()
+                                            )
+                                        )
+                                    )
+                                }
+                            )
                         } else {
                             Log.d("DanielTest", diary.toString())
                         }
                     }
             }
         }
+    }
+
+    private fun extractRemoteImagePath(fullImageUrl: String): String {
+        val chunks = fullImageUrl.split("%2F")
+        val imageName = chunks[2].split("?").first()
+        return "images/${FirebaseAuth.getInstance().currentUser?.uid}/$imageName"
+
     }
 
     private fun insertDiary(
@@ -81,6 +103,7 @@ class WriteViewModel(
                 }
             })
             if (result is RequestState.Success) {
+                uploadImagesToFirebase()
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
@@ -109,6 +132,7 @@ class WriteViewModel(
                 }
             )
             if (result is RequestState.Success) {
+                uploadImagesToFirebase()
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
@@ -191,6 +215,14 @@ class WriteViewModel(
                 remoteImagePath = remoteImagePath
             )
         )
+    }
+
+    private fun uploadImagesToFirebase() {
+        val storage = FirebaseStorage.getInstance().reference
+        galleryState.images.forEach {  galleryImage ->
+            val imagePath = storage.child(galleryImage.remoteImagePath)
+            imagePath.putFile(galleryImage.image)
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package pl.dnajdrowski.diaryapplication.presentation.screens.write
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -15,9 +17,12 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import pl.dnajdrowski.diaryapplication.data.repository.MongoDB
 import pl.dnajdrowski.diaryapplication.model.Diary
+import pl.dnajdrowski.diaryapplication.model.GalleryImage
+import pl.dnajdrowski.diaryapplication.model.GalleryState
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import pl.dnajdrowski.diaryapplication.model.RequestState
+import pl.dnajdrowski.diaryapplication.model.rememberGalleryState
 import pl.dnajdrowski.diaryapplication.util.toRealmInstant
 import java.time.ZonedDateTime
 
@@ -27,6 +32,8 @@ class WriteViewModel(
 
     var uiState by mutableStateOf(UiState())
         private set
+
+    val galleryState = GalleryState()
 
     init {
         getDiaryIdArgument()
@@ -171,6 +178,18 @@ class WriteViewModel(
     fun updateDateTime(zonedDateTime: ZonedDateTime?) {
         uiState = uiState.copy(
             updatedDateTime = zonedDateTime?.toInstant()?.toRealmInstant()
+        )
+    }
+
+    fun addImage(image: Uri, imageType: String) {
+        val remoteImagePath = "images/${FirebaseAuth.getInstance().currentUser?.uid}/" +
+                "${image.lastPathSegment}-${System.currentTimeMillis()}.$imageType"
+        Log.d("WriteViewModel", remoteImagePath)
+        galleryState.addImage(
+            GalleryImage(
+                image = image,
+                remoteImagePath = remoteImagePath
+            )
         )
     }
 }

@@ -210,14 +210,12 @@ fun NavGraphBuilder.writeRoute(
         ) { Mood.entries.size }
 
         val context = LocalContext.current
-
         val viewModel: WriteViewModel = viewModel()
+        val galleryState = viewModel.galleryState
         val uiState = viewModel.uiState
         val pageNumber by remember {
             derivedStateOf { pagerState.currentPage }
         }
-
-        val galleryState = rememberGalleryState()
 
 
         WriteScreen(
@@ -270,11 +268,10 @@ fun NavGraphBuilder.writeRoute(
                 )
             },
             onImageSelect = {
-                galleryState.addImage(
-                    GalleryImage(
-                        image = it,
-                        remoteImagePath = ""
-                    )
+                val type = context.contentResolver.getType(it)?.split("/")?.last() ?: "jpg"
+                viewModel.addImage(
+                    image = it,
+                    imageType = type
                 )
             }
         )

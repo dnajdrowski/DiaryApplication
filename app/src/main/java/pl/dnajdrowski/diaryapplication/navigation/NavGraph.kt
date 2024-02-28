@@ -27,6 +27,7 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import pl.dnajdrowski.diaryapplication.model.GalleryImage
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.presentation.components.DisplayAlertDialog
 import pl.dnajdrowski.diaryapplication.presentation.screens.auth.AuthenticationScreen
@@ -38,6 +39,7 @@ import pl.dnajdrowski.diaryapplication.presentation.screens.write.WriteViewModel
 import pl.dnajdrowski.diaryapplication.util.Constants.APP_ID
 import pl.dnajdrowski.diaryapplication.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import pl.dnajdrowski.diaryapplication.model.RequestState
+import pl.dnajdrowski.diaryapplication.model.rememberGalleryState
 import java.lang.Exception
 
 @Composable
@@ -210,9 +212,14 @@ fun NavGraphBuilder.writeRoute(
         val pageNumber by remember {
             derivedStateOf { pagerState.currentPage }
         }
+
+        val galleryState = rememberGalleryState()
+
+
         WriteScreen(
             uiState = uiState,
             pagerState = pagerState,
+            galleryState = galleryState,
             moodName = {
                 Mood.entries[pageNumber].name
             },
@@ -256,6 +263,14 @@ fun NavGraphBuilder.writeRoute(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                )
+            },
+            onImageSelect = {
+                galleryState.addImage(
+                    GalleryImage(
+                        image = it,
+                        remoteImagePath = ""
+                    )
                 )
             }
         )

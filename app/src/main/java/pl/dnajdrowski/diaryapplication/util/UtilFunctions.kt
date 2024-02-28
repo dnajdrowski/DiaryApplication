@@ -1,8 +1,11 @@
 package pl.dnajdrowski.diaryapplication.util
 
 import android.net.Uri
+import androidx.core.net.toUri
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storageMetadata
 import io.realm.kotlin.types.RealmInstant
+import pl.dnajdrowski.diaryapplication.data.database.entity.ImageToUpload
 import java.time.Instant
 
 fun fetchImagesFromFirebase(
@@ -26,6 +29,19 @@ fun fetchImagesFromFirebase(
             }
         }
     }
+}
+
+fun retryUploadingImageToFirebase(
+    imageToUpload: ImageToUpload,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToUpload.remoteImagePath).putFile(
+        imageToUpload.imageUri.toUri(),
+        storageMetadata {  },
+        imageToUpload.sessionUri.toUri()
+    ).addOnSuccessListener { onSuccess() }
+
 }
 
 fun RealmInstant.toInstant(): Instant {

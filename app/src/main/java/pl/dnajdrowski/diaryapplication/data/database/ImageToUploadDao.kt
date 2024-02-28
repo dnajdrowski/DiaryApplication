@@ -7,14 +7,14 @@ import androidx.room.Query
 import pl.dnajdrowski.diaryapplication.data.database.entity.ImageToUpload
 
 @Dao
-interface ImagesToUploadDao {
+interface ImageToUploadDao {
 
-    @Query("SELECT * FROM images_to_upload_table ORDER BY id ASC")
+    @Query("SELECT * FROM image_to_upload_table ORDER BY id ASC")
     suspend fun getAllImages(): List<ImageToUpload>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addImageToUpload(imageToUpload: ImageToUpload)
 
-    @Query("DELETE FROM images_to_upload_table WHERE id=:imageId")
+    @Query("DELETE FROM image_to_upload_table WHERE id=:imageId")
     suspend fun cleanupImage(imageId: Int)
 }

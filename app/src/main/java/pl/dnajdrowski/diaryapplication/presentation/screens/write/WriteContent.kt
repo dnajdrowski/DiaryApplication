@@ -43,6 +43,7 @@ import coil.request.ImageRequest
 import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 import pl.dnajdrowski.diaryapplication.model.Diary
+import pl.dnajdrowski.diaryapplication.model.GalleryImage
 import pl.dnajdrowski.diaryapplication.model.GalleryState
 import pl.dnajdrowski.diaryapplication.model.Mood
 import pl.dnajdrowski.diaryapplication.presentation.components.GalleryUploader
@@ -59,16 +60,13 @@ fun WriteContent(
     description: String,
     onDescriptionChanged: (String) -> Unit,
     onSavedClicked: (Diary) -> Unit,
-    onImageSelect: (Uri) -> Unit
+    onImageSelect: (Uri) -> Unit,
+    onImageClicked: (GalleryImage) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(key1 = uiState.mood) {
-        pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
-    }
 
     LaunchedEffect(key1 = scrollState.maxValue) {
         scrollState.scrollTo(scrollState.maxValue)
@@ -177,7 +175,7 @@ fun WriteContent(
                     focusManager.clearFocus()
                 },
                 onImageSelect = onImageSelect,
-                onImageClicked = { }
+                onImageClicked = onImageClicked
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(

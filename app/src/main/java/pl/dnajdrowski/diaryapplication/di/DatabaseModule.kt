@@ -7,8 +7,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import pl.dnajdrowski.diaryapplication.connectivity.ConnectivityObserver
 import pl.dnajdrowski.diaryapplication.connectivity.NetworkConnectivityObserver
 import pl.dnajdrowski.diaryapplication.data.database.ImagesDatabase
+import pl.dnajdrowski.diaryapplication.data.database.MIGRATION_1_2
 import pl.dnajdrowski.diaryapplication.util.Constants.IMAGES_DATABASE
 import javax.inject.Singleton
 
@@ -25,7 +27,9 @@ object DatabaseModule {
             context = context,
             klass = ImagesDatabase::class.java,
             name = IMAGES_DATABASE
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides
@@ -40,5 +44,5 @@ object DatabaseModule {
     @Provides
     fun provideNetworkConnectivityObserver(
         @ApplicationContext context: Context
-    ) = NetworkConnectivityObserver(context)
+    ): ConnectivityObserver = NetworkConnectivityObserver(context)
 }

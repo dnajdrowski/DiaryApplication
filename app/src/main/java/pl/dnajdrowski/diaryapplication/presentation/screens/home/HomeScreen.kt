@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import pl.dnajdrowski.diaryapplication.R
 import pl.dnajdrowski.diaryapplication.data.repository.Diaries
 import pl.dnajdrowski.diaryapplication.model.RequestState
+import java.time.ZonedDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -50,6 +51,9 @@ import pl.dnajdrowski.diaryapplication.model.RequestState
 fun HomeScreen(
     diaries: Diaries,
     drawerState: DrawerState,
+    dateIsSelected: Boolean,
+    onDateSelected: (ZonedDateTime) -> Unit,
+    onDateReset: () -> Unit,
     onSignOutClicked: () -> Unit,
     onDeleteAllClicked: () -> Unit,
     onMenuClicked: () -> Unit,
@@ -76,7 +80,10 @@ fun HomeScreen(
             topBar = {
                 HomeTopBar(
                     scrollBehavior = scrollBehavior,
-                    onMenuClicked = onMenuClicked
+                    dateIsSelected = dateIsSelected,
+                    onMenuClicked = onMenuClicked,
+                    onDateSelected = onDateSelected,
+                    onDateReset = onDateReset
                 )
             }, floatingActionButton = {
                 FloatingActionButton(

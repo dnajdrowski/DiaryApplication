@@ -157,6 +157,13 @@ fun NavGraphBuilder.homeRoute(
         HomeScreen(
             diaries = diaries,
             drawerState = drawerState,
+            dateIsSelected = viewModel.dateIsSelected,
+            onDateSelected = {
+                viewModel.getDiaries(it)
+            },
+            onDateReset = {
+                viewModel.getDiaries()
+            },
             onSignOutClicked = {
                 singOutDialogOpened = true
             },

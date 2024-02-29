@@ -9,7 +9,7 @@ import pl.dnajdrowski.diaryapplication.data.database.entity.ImageToUpload
 @Database(
     entities = [ImageToUpload::class, ImageToDelete::class],
     version = 2,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class ImagesDatabase: RoomDatabase() {
     abstract fun imageToUploadDao(): ImageToUploadDao
